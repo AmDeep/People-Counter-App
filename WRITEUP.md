@@ -1,4 +1,4 @@
-cd # Project Write-Up
+## Project Write-Up
 The people counter app is one of the few applications of using a powerful tool such as OpenVino. The purpose of this application is to determine the number of individuals in a video file which can be used to provide information for a variety of surveillance and detection systems. The following code looks at a few models that have been converted and compared for the same purpose.
 
 In order to test out the various differences in the modelling between the different types of setups for detecting people in video files, this project was done both in local and online versions. The models chosen for this particular version included:-

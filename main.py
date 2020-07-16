@@ -121,6 +121,8 @@ def draw_boxes(frame, result, args, width, height, prevAverageColor, personEnter
                 if (xmin < width) and (xmax < width) and (ymin < height) and (ymax < height):
                     #get the average color of the boundary box and do some operations on it
                     imgCropped = frame[xmin:xmax, ymin:ymax]
+                #The AverageColor variable is added to ensure that the system does not confuse certain pixels partially within the bounding boxes and has a greater margin for tolerance based on the difference in average
+                #color and the actual color.
                     currentAverageColor = Get_Average_Color(imgCropped)
                     difference = np.absolute(np.subtract(currentAverageColor, prevAverageColor))
                     difference = difference.mean(axis=0)
@@ -132,9 +134,9 @@ def draw_boxes(frame, result, args, width, height, prevAverageColor, personEnter
                                 current_count = current_count + 1
                             else:
                                 pass
-
+                 #The logic behind the code below is that is the colour difference between the frames is zero and the personEnteredFlag is True(indicating that someone is in the frame). then the system should confirm with the stopPerson variable to confirm if a new entity has entered the frame and update the rest of the variables. Similarly, the main purpose of the PersonEntered Flag is to help compare and create a comparison table laden with conditions to tell the system when to stop focusing. In this case, the limit has been set to be greater than 1 but less than 11. Once this condition has been met along with the personStateOut being analyzed to be false, the counter initializes it as true and makes the stopPerson tag false to prevent overcounting. If the conditions aren't met, the loop passes and the remaining variables are outputted.
                         if np.all(difference == 0) and personEnteredFlag == True:
-
+                         
                             if stopPerson == False:
                                 personEnteredFlag = False
                                 personStateOut = False
@@ -245,7 +247,7 @@ def infer_on_stream(args, client):
             AverageNow = AverageNow.mean(axis=0)
             current_value = int((np.abs(RoomWithNoBodyAverage / AverageNow)) * 10000)
 
-            # when someone exits the frame
+            # when someone exits the frame. The code bekow is used to recheck the detected time start when the person is detected along with the current value and duration. The if condition has been designed to take in information and apply changes if the value reaches between 10017(current value) and 10015(previous value). Due to certain errors and delays in detection that occured in the previous runs, this condition had to be inserted. Once the counter starts and a bounding box is declared on an individual, the system configures an id on the person and attaches the duration along with it to the dump file. The duration is calculated by subtracting the current time from the initial time and the value555 variable that subtracts the time for which the person remains undetected but in the frame.
             if current_count == 0 and current_value > 10017 and prev_value < 10015 and person_entered_flag == False:
                 if flag_zero_count == False:
                     value555 = (counter_inter * detectedTimeStart) / 2
